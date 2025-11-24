@@ -1,0 +1,4479 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paws & Claws - Груминг салон для питомцев</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+    <style>
+        /* Базовые стили и CSS переменные */
+        :root {
+            --primary-color: #8B4513; /* Коричневый вместо желтого */
+            --secondary-color: #A0522D; /* Темно-коричневый */
+            --accent-color: #CD5C5C; /* Красный акцент */
+            --light-color: #F5F5DC; /* Бежевый */
+            --dark-color: #3E2723; /* Темно-коричневый */
+            --text-color: #3E2723;
+            --bg-color: #FFF8E1; /* Светло-бежевый */
+            --header-height: 80px;
+            --footer-height: 300px;
+            --transition: all 0.3s ease;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            --border-radius: 10px;
+        }
+
+        .dark-theme {
+            --primary-color: #A0522D;
+            --secondary-color: #8B4513;
+            --accent-color: #CD5C5C;
+            --light-color: #3E2723;
+            --dark-color: #F5F5DC;
+            --text-color: #F5F5DC;
+            --bg-color: #2E1A14;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Стили для хедера */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: var(--header-height);
+            background-color: var(--bg-color);
+            box-shadow: var(--shadow);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 100%;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .logo i {
+            margin-right: 10px;
+            font-size: 2rem;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+
+        nav ul li {
+            margin-left: 25px;
+            position: relative;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: var(--transition);
+            position: relative;
+        }
+
+        nav ul li a:hover {
+            color: var(--accent-color);
+        }
+
+        nav ul li a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: var(--transition);
+        }
+
+        nav ul li a:hover::after {
+            width: 100%;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .theme-toggle, .cart-btn, .search-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: var(--text-color);
+            cursor: pointer;
+            margin-left: 15px;
+            transition: var(--transition);
+        }
+
+        .theme-toggle:hover, .cart-btn:hover, .search-btn:hover {
+            color: var(--accent-color);
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-container {
+            position: relative;
+        }
+
+        /* Стили для основного контента */
+        main {
+            margin-top: var(--header-height);
+            min-height: calc(100vh - var(--header-height) - var(--footer-height));
+        }
+
+        .hero {
+            height: 80vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%238B4513"/><path d="M0 0L100 100M100 0L0 100" stroke="%23A0522D" stroke-width="2"/><circle cx="50" cy="50" r="30" fill="%23CD5C5C" opacity="0.3"/></svg>');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><path d="M40,100 C40,60 80,40 100,40 C120,40 160,60 160,100 C160,140 120,160 100,160 C80,160 40,140 40,100 Z" fill="none" stroke="%23ffffff" stroke-width="2" opacity="0.1"/><path d="M60,90 C60,70 80,60 100,60 C120,60 140,70 140,90 C140,110 120,120 100,120 C80,120 60,110 60,90 Z" fill="none" stroke="%23ffffff" stroke-width="2" opacity="0.1"/></svg>');
+            background-size: 200px;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(-200px, -200px);
+            }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            animation: fadeInUp 1s ease;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease 0.3s both;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: var(--transition);
+            animation: fadeInUp 1s ease 0.6s both;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Стили для секций */
+        section {
+            padding: 80px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        /* Стили для услуг */
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .service-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .service-img {
+            height: 200px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .service-content {
+            padding: 20px;
+        }
+
+        .service-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .service-content p {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .service-price {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--accent-color);
+        }
+
+        /* Стили для отзывов */
+        .testimonials-slider {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+        }
+
+        .testimonials-container {
+            display: flex;
+            transition: transform 0.5s ease;
+        }
+
+        .testimonial-card {
+            flex: 0 0 100%;
+            padding: 0 15px;
+        }
+
+        .testimonial-content {
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            position: relative;
+        }
+
+        .testimonial-content::before {
+            content: '"';
+            position: absolute;
+            top: 10px;
+            left: 20px;
+            font-size: 4rem;
+            color: var(--accent-color);
+            opacity: 0.3;
+            font-family: Georgia, serif;
+        }
+
+        .testimonial-text {
+            font-style: italic;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+            color: var(--text-color);
+        }
+
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        .author-info h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .author-info p {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .slider-controls {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .slider-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            cursor: pointer;
+            margin: 0 10px;
+            transition: var(--transition);
+        }
+
+        .slider-btn:hover {
+            color: var(--accent-color);
+        }
+
+        /* Стили для футера */
+        footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 60px 0 20px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: var(--accent-color);
+            position: relative;
+            padding-bottom: 10px;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 2px;
+            background-color: var(--accent-color);
+        }
+
+        .footer-column p {
+            margin-bottom: 15px;
+            color: var(--light-color);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: var(--light-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-color);
+            padding-left: 5px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .social-links a:hover {
+            background-color: var(--accent-color);
+            transform: translateY(-5px);
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Стили для кнопки "Наверх" */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 999;
+            box-shadow: var(--shadow);
+        }
+
+        .scroll-to-top.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top:hover {
+            background-color: var(--primary-color);
+            transform: translateY(-5px);
+        }
+
+        /* Стили для поиска */
+        .search-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 2000;
+        }
+
+        .search-container.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .search-box {
+            width: 90%;
+            max-width: 600px;
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            position: relative;
+            transform: translateY(-50px);
+            transition: var(--transition);
+        }
+
+        .search-container.active .search-box {
+            transform: translateY(0);
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .search-box input:focus {
+            border-color: var(--accent-color);
+        }
+
+        .close-search {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-search:hover {
+            color: var(--accent-color);
+        }
+
+        /* Стили для корзины */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background-color: var(--bg-color);
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cart-sidebar.active {
+            right: 0;
+        }
+
+        .cart-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--secondary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-header h3 {
+            color: var(--primary-color);
+        }
+
+        .close-cart {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .close-cart:hover {
+            color: var(--accent-color);
+        }
+
+        .cart-items {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .cart-item-details {
+            flex: 1;
+        }
+
+        .cart-item-details h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .cart-item-price {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .cart-item-remove:hover {
+            color: #ff5252;
+        }
+
+        .cart-footer {
+            padding: 20px;
+            border-top: 1px solid var(--secondary-color);
+        }
+
+        .cart-total {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .checkout-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* Стили для затемнения фона */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 1500;
+        }
+
+        .overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Анимации для появления элементов при скролле */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Стили для страниц */
+        .page {
+            display: none;
+            padding-top: 40px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Стили для формы */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .form-control:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Стили для информации о контактах */
+        .contact-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .contact-card {
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: var(--transition);
+        }
+
+        .contact-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .contact-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .contact-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .contact-card p {
+            color: var(--text-color);
+        }
+
+        /* Стили для модального окна */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            z-index: 2000;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 500px;
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            position: relative;
+            transform: translateY(-50px);
+            transition: var(--transition);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            color: var(--accent-color);
+        }
+
+        .modal-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .modal p {
+            color: var(--text-color);
+            margin-bottom: 20px;
+        }
+
+        /* Дополнительные стили для улучшения внешнего вида */
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .about-text h2 {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .about-text p {
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+
+        .about-image {
+            height: 400px;
+            background-color: var(--secondary-color);
+            border-radius: var(--border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+        }
+
+        .team-card {
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .team-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .team-img {
+            height: 250px;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+        }
+
+        .team-info {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .team-info h3 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .team-info p {
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .price-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+            background-color: var(--light-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .price-table th, .price-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--secondary-color);
+        }
+
+        .price-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .price-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .price-table tr:hover {
+            background-color: rgba(0, 0, 0, 0.03);
+        }
+
+        .price-amount {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .booking-form {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* Стили для уведомлений */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        /* Стили для загрузки */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Дополнительные декоративные элементы */
+        .decoration {
+            position: absolute;
+            z-index: -1;
+        }
+
+        .paw-print {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            opacity: 0.1;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%238B4513"/><circle cx="70" cy="30" r="15" fill="%238B4513"/><circle cx="30" cy="70" r="15" fill="%238B4513"/><circle cx="70" cy="70" r="15" fill="%238B4513"/><circle cx="50" cy="50" r="20" fill="%238B4513"/></svg>');
+            background-size: contain;
+        }
+
+        /* Специальные стили для темной темы */
+        .dark-theme .service-card,
+        .dark-theme .testimonial-content,
+        .dark-theme .contact-card,
+        .dark-theme .team-card,
+        .dark-theme .contact-form,
+        .dark-theme .booking-form,
+        .dark-theme .price-table {
+            background-color: var(--light-color);
+        }
+
+        .dark-theme .form-control {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .dark-theme .price-table th {
+            background-color: var(--accent-color);
+        }
+
+        .dark-theme .service-content p,
+        .dark-theme .testimonial-text,
+        .dark-theme .contact-card p,
+        .dark-theme .team-info p,
+        .dark-theme .about-text p,
+        .dark-theme .form-group label,
+        .dark-theme .breadcrumb-item a,
+        .dark-theme .breadcrumb-item.active {
+            color: var(--text-color);
+        }
+
+        /* Анимация для логотипа */
+        .logo span {
+            display: inline-block;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Стили для аккордеона FAQ */
+        .faq-item {
+            margin-bottom: 15px;
+            border: 1px solid var(--secondary-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        .faq-question {
+            padding: 15px 20px;
+            background-color: var(--light-color);
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+            color: var(--text-color);
+        }
+
+        .faq-question:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .faq-answer {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease, padding 0.3s ease;
+            color: var(--text-color);
+        }
+
+        .faq-item.active .faq-answer {
+            padding: 15px 20px;
+            max-height: 500px;
+        }
+
+        .faq-item.active .faq-question {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .faq-toggle {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.active .faq-toggle {
+            transform: rotate(45deg);
+        }
+
+        /* Стили для счетчика */
+        .counter {
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            margin: 50px 0;
+            flex-wrap: wrap;
+        }
+
+        .counter-item {
+            padding: 20px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .counter-number {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+        }
+
+        .counter-text {
+            font-size: 1.1rem;
+            color: var(--primary-color);
+        }
+
+        /* Стили для прогресс-бара навыков */
+        .skill-item {
+            margin-bottom: 20px;
+        }
+
+        .skill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .skill-bar {
+            height: 10px;
+            background-color: var(--secondary-color);
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 5px;
+            width: 0;
+            transition: width 1.5s ease;
+        }
+
+        /* Стили для таймера акции */
+        .promo-timer {
+            text-align: center;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin: 30px 0;
+        }
+
+        .timer-title {
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .timer-display {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .timer-unit {
+            background-color: var(--dark-color);
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            min-width: 70px;
+        }
+
+        .timer-value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+
+        /* Стили для карты */
+        .map-container {
+            height: 400px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin-top: 30px;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .map-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            background-color: var(--secondary-color);
+        }
+
+        .map-placeholder i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Стили для пагинации */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination-item {
+            margin: 0 5px;
+        }
+
+        .pagination-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .pagination-link:hover, .pagination-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Стили для меток */
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+
+        /* Стили для выпадающего меню */
+        .dropdown {
+            position: relative;
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-color);
+            min-width: 200px;
+            box-shadow: var(--shadow);
+            border-radius: var(--border-radius);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: var(--transition);
+            z-index: 1000;
+            padding: 10px 0;
+        }
+
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 10px 15px;
+            color: var(--text-color);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        /* Стили для переключателя темы */
+        .theme-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background-color: var(--secondary-color);
+            border-radius: 13px;
+            display: flex;
+            align-items: center;
+            padding: 0 3px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .theme-toggle::before {
+            content: '\f185';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 5px;
+            color: var(--text-color);
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .theme-toggle::after {
+            content: '\f186';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 5px;
+            color: var(--text-color);
+            font-size: 0.8rem;
+            transition: var(--transition);
+        }
+
+        .theme-toggle.active::before {
+            color: var(--accent-color);
+        }
+
+        .theme-toggle:not(.active)::after {
+            color: var(--accent-color);
+        }
+
+        .theme-toggle-handle {
+            width: 20px;
+            height: 20px;
+            background-color: var(--bg-color);
+            border-radius: 50%;
+            transform: translateX(0);
+            transition: var(--transition);
+        }
+
+        .theme-toggle.active .theme-toggle-handle {
+            transform: translateX(24px);
+        }
+
+        /* Дополнительные анимации */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% {
+                transform: translateX(0);
+            }
+            10%, 30%, 50%, 70%, 90% {
+                transform: translateX(-5px);
+            }
+            20%, 40%, 60%, 80% {
+                transform: translateX(5px);
+            }
+        }
+
+        .shake {
+            animation: shake 0.5s;
+        }
+
+        /* Стили для предзагрузки */
+        .preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        .preloader.hidden {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--secondary-color);
+            border-top: 5px solid var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Дополнительные стили для улучшения UX */
+        .focus-visible:focus {
+            outline: 2px solid var(--accent-color);
+            outline-offset: 2px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Стили для выбора текста */
+        ::selection {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Стили для скроллбара */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-color);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary-color);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-color);
+        }
+
+        /* Стили для placeholder */
+        ::placeholder {
+            color: var(--secondary-color);
+            opacity: 0.7;
+        }
+
+        /* Стили для инвалидных полей */
+        .form-control:invalid {
+            border-color: #ff6b6b;
+        }
+
+        .error-message {
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .form-control:invalid + .error-message {
+            display: block;
+        }
+
+        /* Стили для успешной отправки формы */
+        .success-message {
+            background-color: #51cf66;
+            color: white;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-top: 20px;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        /* Стили для формы оформления заказа в корзине */
+        .checkout-form {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid var(--secondary-color);
+        }
+
+        .checkout-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .checkout-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        /* Улучшение видимости текста в темной теме */
+        .dark-theme .service-content h3,
+        .dark-theme .team-info h3,
+        .dark-theme .contact-card h3,
+        .dark-theme .footer-column h3,
+        .dark-theme .modal-title,
+        .dark-theme .section-title h2,
+        .dark-theme .author-info h4,
+        .dark-theme .cart-item-details h4,
+        .dark-theme .cart-header h3,
+        .dark-theme .about-text h2 {
+            color: var(--primary-color);
+        }
+
+        .dark-theme .counter-text {
+            color: var(--primary-color);
+        }
+
+        .dark-theme .faq-question {
+            background-color: var(--light-color);
+            color: var(--text-color);
+        }
+
+        .dark-theme .faq-answer {
+            color: var(--text-color);
+        }
+
+        .dark-theme .price-table td {
+            color: var(--text-color);
+        }
+
+        /* Стили для валидации телефона */
+        .phone-input {
+            position: relative;
+        }
+
+        .phone-input input {
+            padding-left: 40px;
+        }
+
+        .phone-input::before {
+            content: '+7';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-weight: 500;
+            z-index: 1;
+        }
+
+        /* Улучшенные стили для страниц */
+        .page-header {
+            background-color: var(--light-color);
+            padding: 60px 0;
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .page-header p {
+            font-size: 1.1rem;
+            color: var(--text-color);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin: 50px 0;
+        }
+
+        .feature-card {
+            background-color: var(--light-color);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .feature-card p {
+            color: var(--text-color);
+        }
+
+        /* Стили для улучшенной навигации на мобильных устройствах */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+
+            nav {
+                position: fixed;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-color);
+                transform: translateY(-100%);
+                opacity: 0;
+                visibility: hidden;
+                transition: var(--transition);
+                z-index: 999;
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            nav.active {
+                transform: translateY(0);
+                opacity: 1;
+                visibility: visible;
+            }
+
+            nav ul {
+                flex-direction: column;
+                padding: 20px 0;
+            }
+
+            nav ul li {
+                margin: 10px 0;
+                text-align: center;
+            }
+
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                background-color: transparent;
+                padding: 0;
+                margin-top: 10px;
+            }
+
+            .dropdown-item {
+                padding: 8px 15px;
+            }
+        }
+
+        /* НОВЫЕ СТИЛИ ДЛЯ СИСТЕМЫ ОТЗЫВОВ */
+        .reviews-section {
+            padding: 80px 0;
+            background-color: var(--light-color);
+        }
+
+        .reviews-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .reviews-stats {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .average-rating {
+            text-align: center;
+        }
+
+        .rating-value {
+            font-size: 3rem;
+            font-weight: 700;
+            color: var(--accent-color);
+            line-height: 1;
+        }
+
+        .rating-stars {
+            color: var(--accent-color);
+            margin: 5px 0;
+        }
+
+        .rating-count {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .rating-bars {
+            flex: 1;
+        }
+
+        .rating-bar {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .rating-label {
+            width: 80px;
+            font-size: 0.9rem;
+        }
+
+        .rating-bar-inner {
+            flex: 1;
+            height: 8px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 10px;
+        }
+
+        .rating-bar-fill {
+            height: 100%;
+            background-color: var(--accent-color);
+        }
+
+        .rating-percent {
+            width: 30px;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .reviews-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--secondary-color);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: var(--transition);
+            color: var(--text-color);
+        }
+
+        .filter-btn.active, .filter-btn:hover {
+            background-color: var(--accent-color);
+            color: white;
+            border-color: var(--accent-color);
+        }
+
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .review-card {
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+
+        .review-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .review-author {
+            display: flex;
+            align-items: center;
+        }
+
+        .review-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .review-author-info h4 {
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .review-date {
+            font-size: 0.8rem;
+            color: var(--text-color);
+            opacity: 0.7;
+        }
+
+        .review-rating {
+            color: var(--accent-color);
+        }
+
+        .review-text {
+            color: var(--text-color);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .review-service {
+            font-size: 0.9rem;
+            color: var(--accent-color);
+            font-weight: 500;
+        }
+
+        .add-review-form {
+            background-color: var(--bg-color);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-top: 40px;
+        }
+
+        .form-title {
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .rating-input {
+            display: flex;
+            flex-direction: row-reverse;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .rating-input input {
+            display: none;
+        }
+
+        .rating-input label {
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            transition: var(--transition);
+            margin-right: 5px;
+        }
+
+        .rating-input input:checked ~ label,
+        .rating-input label:hover,
+        .rating-input label:hover ~ label {
+            color: var(--accent-color);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination-item {
+            margin: 0 5px;
+        }
+
+        .pagination-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background-color: var(--light-color);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: var(--border-radius);
+            transition: var(--transition);
+        }
+
+        .pagination-link:hover, .pagination-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        /* Стили для команды разработчиков */
+        .developers-section {
+            padding: 80px 0;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            margin: 80px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .developers-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><circle cx="20" cy="20" r="5" fill="%23ffffff" opacity="0.1"/><circle cx="80" cy="40" r="8" fill="%23ffffff" opacity="0.1"/><circle cx="40" cy="80" r="6" fill="%23ffffff" opacity="0.1"/><circle cx="70" cy="70" r="4" fill="%23ffffff" opacity="0.1"/><circle cx="10" cy="50" r="7" fill="%23ffffff" opacity="0.1"/></svg>');
+            background-size: 200px;
+        }
+
+        .developers-section .section-title h2 {
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        .developers-section .section-title::after {
+            background-color: white;
+        }
+
+        .developers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .developer-card {
+            background-color: rgba(255, 255, 255, 0.95);
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: var(--transition);
+            color: var(--text-color);
+        }
+
+        .developer-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .developer-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2.5rem;
+            margin: 0 auto 20px;
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .developer-info h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+        }
+
+        .developer-role {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .developer-info p {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .developer-contacts {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .developer-contact {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+            color: white;
+            border-radius: 50%;
+            text-decoration: none;
+            transition: var(--transition);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .developer-contact:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Улучшенные стили для светлой темы - более темные контейнеры */
+        .light-theme-container {
+            background-color: #f0e6d2 !important;
+        }
+
+        /* ИСПРАВЛЕНИЕ БАГА С ТЕЛЕФОНОМ - выравнивание цифры 7 */
+        .phone-input-fixed {
+            position: relative;
+        }
+
+        .phone-input-fixed::before {
+            content: '+7';
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--secondary-color);
+            font-weight: 500;
+            z-index: 2;
+            pointer-events: none;
+            line-height: 1; /* Добавлено для выравнивания */
+        }
+
+        .phone-input-fixed input {
+            padding-left: 40px !important;
+        }
+
+        /* Улучшенная адаптивность для телефонов */
+        @media (max-width: 480px) {
+            .reviews-stats {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .rating-bars {
+                width: 100%;
+                margin-top: 20px;
+            }
+            
+            .reviews-filters {
+                justify-content: center;
+            }
+            
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .review-rating {
+                margin-top: 10px;
+            }
+            
+            .developers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .phone-input-fixed::before {
+                left: 12px;
+                font-size: 0.9rem;
+            }
+            
+            .phone-input-fixed input {
+                padding-left: 35px !important;
+            }
+            
+            .form-row {
+                gap: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            
+            .section-title h2 {
+                font-size: 1.6rem;
+            }
+            
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Дополнительные улучшения для мобильных устройств */
+        @media (max-width: 360px) {
+            .container {
+                width: 95%;
+                padding: 0 10px;
+            }
+            
+            .review-card, .service-card, .contact-card {
+                padding: 20px 15px;
+            }
+            
+            .developer-card {
+                padding: 20px 15px;
+            }
+            
+            .developer-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 2rem;
+            }
+        }
+
+        /* Улучшенные стили для отзывов в светлой теме */
+        .review-card.light-theme-container {
+            background-color: #f0e6d2;
+            border: 1px solid #e0d6c2;
+        }
+
+        .add-review-form.light-theme-container {
+            background-color: #f0e6d2;
+            border: 1px solid #e0d6c2;
+        }
+
+        /* Переопределение для темной темы */
+        .dark-theme .review-card.light-theme-container,
+        .dark-theme .add-review-form.light-theme-container {
+            background-color: var(--light-color);
+            border-color: var(--secondary-color);
+        }
+
+        /* УЛУЧШЕНИЯ ДЛЯ АДАПТИВНОСТИ НА МОБИЛЬНЫХ УСТРОЙСТВАХ */
+        
+        /* Улучшенные стили для хедера на мобильных устройствах */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: row;
+                height: var(--header-height);
+                padding: 0 15px;
+            }
+            
+            .logo {
+                font-size: 1.5rem;
+            }
+            
+            .logo i {
+                font-size: 1.7rem;
+            }
+            
+            .header-actions {
+                margin-top: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+                margin-left: 15px;
+            }
+            
+            nav {
+                display: none;
+            }
+            
+            nav.active {
+                display: block;
+                position: absolute;
+                top: var(--header-height);
+                left: 0;
+                width: 100%;
+                background-color: var(--bg-color);
+                box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+                z-index: 999;
+            }
+            
+            nav.active ul {
+                flex-direction: column;
+                padding: 20px 0;
+                margin-top: 0;
+            }
+            
+            nav.active ul li {
+                margin: 10px 0;
+            }
+            
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                background-color: transparent;
+                padding: 0;
+                margin-top: 10px;
+            }
+        }
+
+        /* Улучшенные стили для героя на мобильных устройствах */
+        @media (max-width: 768px) {
+            .hero {
+                height: 60vh;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+        }
+
+        /* Улучшенные стили для секций на мобильных устройствах */
+        @media (max-width: 768px) {
+            section {
+                padding: 50px 0;
+            }
+            
+            .section-title h2 {
+                font-size: 1.8rem;
+            }
+            
+            .page-header {
+                padding: 40px 0;
+            }
+            
+            .page-header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        /* Улучшенные стили для кнопок на мобильных устройствах */
+        @media (max-width: 480px) {
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+            
+            .service-card .btn {
+                width: auto;
+            }
+        }
+
+        /* Улучшенные стили для форм на мобильных устройствах */
+        @media (max-width: 768px) {
+            .contact-form, .booking-form {
+                padding: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+        }
+
+        /* Улучшенные стили для корзины на мобильных устройствах */
+        @media (max-width: 768px) {
+            .cart-sidebar {
+                max-width: 100%;
+            }
+            
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .cart-item-img {
+                margin-right: 0;
+                margin-bottom: 10px;
+            }
+        }
+
+        /* Улучшенные стили для футера на мобильных устройствах */
+        @media (max-width: 768px) {
+            footer {
+                padding: 40px 0 20px;
+            }
+            
+            .footer-content {
+                gap: 30px;
+            }
+            
+            .footer-column {
+                text-align: center;
+            }
+            
+            .footer-column h3::after {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+
+        /* Улучшенные стили для карточек услуг на мобильных устройствах */
+        @media (max-width: 480px) {
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .service-card {
+                margin-bottom: 20px;
+            }
+            
+            .service-content {
+                padding: 15px;
+            }
+        }
+
+        /* Улучшенные стили для отзывов на мобильных устройствах */
+        @media (max-width: 480px) {
+            .reviews-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .review-card {
+                padding: 20px;
+            }
+            
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .review-rating {
+                margin-top: 10px;
+            }
+        }
+
+        /* Улучшенные стили для команды разработчиков на мобильных устройствах */
+        @media (max-width: 480px) {
+            .developers-section {
+                padding: 50px 0;
+                margin: 50px 0;
+            }
+            
+            .developers-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .developer-card {
+                padding: 20px;
+            }
+        }
+
+        /* Улучшенные стили для таблицы цен на мобильных устройствах */
+        @media (max-width: 768px) {
+            .price-table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            
+            .price-table th, .price-table td {
+                padding: 10px;
+            }
+        }
+
+        /* Улучшенные стили для кнопки "Наверх" на мобильных устройствах */
+        @media (max-width: 480px) {
+            .scroll-to-top {
+                bottom: 20px;
+                right: 20px;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+        }
+
+        /* Улучшенные стили для уведомлений на мобильных устройствах */
+        @media (max-width: 480px) {
+            .notification {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+                text-align: center;
+            }
+        }
+
+        /* Улучшенные стили для модальных окон на мобильных устройствах */
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+            }
+        }
+
+        /* Улучшенные стили для счетчика на мобильных устройствах */
+        @media (max-width: 768px) {
+            .counter {
+                flex-direction: column;
+            }
+            
+            .counter-item {
+                margin-bottom: 20px;
+            }
+        }
+
+        /* Улучшенные стили для карты на мобильных устройствах */
+        @media (max-width: 768px) {
+            .map-container {
+                height: 300px;
+            }
+        }
+
+        /* Улучшенные стили для пагинации на мобильных устройствах */
+        @media (max-width: 480px) {
+            .pagination {
+                flex-wrap: wrap;
+            }
+            
+            .pagination-item {
+                margin: 2px;
+            }
+            
+            .pagination-link {
+                width: 35px;
+                height: 35px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Улучшенные стили для аккордеона FAQ на мобильных устройствах */
+        @media (max-width: 480px) {
+            .faq-question {
+                padding: 12px 15px;
+            }
+            
+            .faq-answer {
+                padding: 0 15px;
+            }
+            
+            .faq-item.active .faq-answer {
+                padding: 12px 15px;
+            }
+        }
+
+        /* Улучшенные стили для прогресс-бара на мобильных устройствах */
+        @media (max-width: 480px) {
+            .skill-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .skill-bar {
+                width: 100%;
+                margin-top: 5px;
+            }
+        }
+
+        /* Улучшенные стили для таймера акции на мобильных устройствах */
+        @media (max-width: 480px) {
+            .timer-display {
+                gap: 10px;
+            }
+            
+            .timer-unit {
+                min-width: 60px;
+                padding: 8px 10px;
+            }
+            
+            .timer-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* Улучшенные стили для выпадающего меню на мобильных устройствах */
+        @media (max-width: 768px) {
+            .dropdown-menu {
+                position: static;
+                opacity: 1;
+                visibility: visible;
+                transform: none;
+                box-shadow: none;
+                background-color: transparent;
+                padding: 0;
+                margin-top: 10px;
+            }
+            
+            .dropdown-item {
+                padding: 8px 15px;
+            }
+        }
+
+        /* Улучшенные стили для переключателя темы на мобильных устройствах */
+        @media (max-width: 480px) {
+            .theme-toggle {
+                width: 45px;
+                height: 24px;
+            }
+            
+            .theme-toggle-handle {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .theme-toggle.active .theme-toggle-handle {
+                transform: translateX(21px);
+            }
+        }
+
+        /* Улучшенные стили для предзагрузчика на мобильных устройствах */
+        @media (max-width: 480px) {
+            .loader {
+                width: 40px;
+                height: 40px;
+            }
+        }
+
+        /* Улучшенные стили для скроллбара на мобильных устройствах */
+        @media (max-width: 768px) {
+            ::-webkit-scrollbar {
+                width: 6px;
+            }
+        }
+
+        /* Улучшенные стили для placeholder на мобильных устройствах */
+        @media (max-width: 480px) {
+            ::placeholder {
+                font-size: 0.9rem;
+            }
+        }
+
+        /* Улучшенные стили для меток на мобильных устройствах */
+        @media (max-width: 480px) {
+            .badge {
+                font-size: 0.7rem;
+                padding: 3px 8px;
+            }
+        }
+
+        /* Улучшенные стили для иконок на мобильных устройствах */
+        @media (max-width: 480px) {
+            .feature-icon, .contact-icon {
+                font-size: 2rem;
+            }
+            
+            .service-img i, .team-img i, .about-image i {
+                font-size: 2rem;
+            }
+        }
+
+        /* Улучшенные стили для текста на мобильных устройствах */
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.9rem;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            h2 {
+                font-size: 1.6rem;
+            }
+            
+            h3 {
+                font-size: 1.4rem;
+            }
+        }
+
+        /* Улучшенные стили для отступов на мобильных устройствах */
+        @media (max-width: 480px) {
+            .container {
+                padding: 0 10px;
+            }
+            
+            .service-content, .team-info, .contact-card, .review-card, .developer-card {
+                padding: 15px;
+            }
+        }
+
+        /* Улучшенные стили для изображений на мобильных устройствах */
+        @media (max-width: 480px) {
+            .service-img, .team-img, .about-image {
+                height: 150px;
+            }
+        }
+
+        /* Улучшенные стили для анимаций на мобильных устройствах */
+        @media (max-width: 768px) {
+            .service-card:hover, .team-card:hover, .contact-card:hover, .feature-card:hover, .developer-card:hover {
+                transform: none;
+            }
+        }
+
+        /* Улучшенные стили для тени на мобильных устройствах */
+        @media (max-width: 768px) {
+            .service-card, .team-card, .contact-card, .feature-card, .developer-card, .review-card {
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Предзагрузчик -->
+    <div class="preloader">
+        <div class="loader"></div>
+    </div>
+
+    <!-- Хедер -->
+    <header>
+        <div class="container header-container">
+            <a href="#" class="logo" data-page="home">
+                <i class="fas fa-paw"></i>
+                <span>Paws & Claws</span>
+            </a>
+            
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            
+            <nav>
+                <ul>
+                    <li><a href="#" data-page="home">Главная</a></li>
+                    <li><a href="#" data-page="about">О нас</a></li>
+                    <li class="dropdown">
+                        <a href="#" data-page="services">Услуги <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu">
+                            <a href="#" class="dropdown-item" data-page="services">Все услуги</a>
+                            <a href="#" class="dropdown-item" data-service="Комплексный груминг">Комплексный груминг</a>
+                            <a href="#" class="dropdown-item" data-service="Стрижка и укладка">Стрижка и укладка</a>
+                            <a href="#" class="dropdown-item" data-service="Гигиенический уход">Гигиенический уход</a>
+                            <a href="#" class="dropdown-item" data-service="Чистка зубов">Чистка зубов</a>
+                            <a href="#" class="dropdown-item" data-service="SPA-процедуры">SPA-процедуры</a>
+                            <a href="#" class="dropdown-item" data-service="Обработка от паразитов">Обработка от паразитов</a>
+                        </div>
+                    </li>
+                    <li><a href="#" data-page="reviews">Отзывы</a></li>
+                    <li><a href="#" data-page="contact">Контакты</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <div class="search-btn">
+                    <i class="fas fa-search"></i>
+                </div>
+                <div class="cart-container">
+                    <button class="cart-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                </div>
+                <div class="theme-toggle">
+                    <div class="theme-toggle-handle"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Основной контент -->
+    <main>
+        <!-- Главная страница -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <div class="hero-content">
+                    <h1>Профессиональный груминг для ваших питомцев</h1>
+                    <p>Мы заботимся о ваших любимцах с любовью и профессионализмом. Качественные услуги по уходу за животными в комфортной атмосфере.</p>
+                    <a href="#" class="btn" data-page="booking">Записаться онлайн</a>
+                </div>
+            </div>
+
+            <!-- КОМАНДА РАЗРАБОТЧИКОВ - ПЕРЕМЕЩЕНА ВВЕРХ -->
+            <div class="developers-section">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Команда разработчиков сайта</h2>
+                    </div>
+                    <div class="developers-grid">
+                        <div class="developer-card">
+                            <div class="developer-avatar">
+                                <i class="fas fa-code"></i>
+                            </div>
+                            <div class="developer-info">
+                                <h3>Лика</h3>
+                                <p class="developer-role">Основной разработчик и дизайнер</p>
+                                <p>Отвечала за создание архитектуры сайта, верстку, дизайн и основную функциональность.</p>
+                                <div class="developer-contacts">
+                                    <a href="https://t.me/likallk" class="developer-contact" target="_blank">
+                                        <i class="fab fa-telegram"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="developer-card">
+                            <div class="developer-avatar">
+                                <i class="fas fa-paint-brush"></i>
+                            </div>
+                            <div class="developer-info">
+                                <h3>Лера</h3>
+                                <p class="developer-role">Редактор по дизайну</p>
+                                <p>Отвечала за визуальную составляющую, подбор цветовой гаммы и улучшение пользовательского опыта.</p>
+                                <div class="developer-contacts">
+                                    <a href="https://t.me/lerkavvl" class="developer-contact" target="_blank">
+                                        <i class="fab fa-telegram"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="developer-card">
+                            <div class="developer-avatar">
+                                <i class="fas fa-pen"></i>
+                            </div>
+                            <div class="developer-info">
+                                <h3>Миша</h3>
+                                <p class="developer-role">Главный копирайтер</p>
+                                <p>Отвечал за текстовое наполнение сайта, создание убедительного контента и SEO-оптимизацию.</p>
+                                <div class="developer-contacts">
+                                    <a href="https://t.me/magnoliagod" class="developer-contact" target="_blank">
+                                        <i class="fab fa-telegram"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <section class="services-section">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Наши услуги</h2>
+                    </div>
+                    <div class="services-grid">
+                        <div class="service-card fade-in" data-service="Комплексный груминг">
+                            <div class="service-img">
+                                <i class="fas fa-bath"></i>
+                            </div>
+                            <div class="service-content">
+                                <h3>Комплексный груминг</h3>
+                                <p>Полный комплекс услуг по уходу за шерстью, кожей и когтями вашего питомца.</p>
+                                <div class="service-price">от 1500 руб.</div>
+                                <button class="btn add-to-cart" data-service="Комплексный груминг" data-price="1500">Добавить в корзину</button>
+                            </div>
+                        </div>
+                        <div class="service-card fade-in" data-service="Стрижка и укладка">
+                            <div class="service-img">
+                                <i class="fas fa-cut"></i>
+                            </div>
+                            <div class="service-content">
+                                <h3>Стрижка и укладка</h3>
+                                <p>Профессиональная стрижка по породе или индивидуальному запросу с последующей укладкой.</p>
+                                <div class="service-price">от 1200 руб.</div>
+                                <button class="btn add-to-cart" data-service="Стрижка и укладка" data-price="1200">Добавить в корзину</button>
+                            </div>
+                        </div>
+                        <div class="service-card fade-in" data-service="Чистка зубов">
+                            <div class="service-img">
+                                <i class="fas fa-teeth"></i>
+                            </div>
+                            <div class="service-content">
+                                <h3>Чистка зубов</h3>
+                                <p>Профессиональная чистка зубов и уход за полостью рта вашего питомца.</p>
+                                <div class="service-price">от 800 руб.</div>
+                                <button class="btn add-to-cart" data-service="Чистка зубов" data-price="800">Добавить в корзину</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="feature-section">
+                <div class="container">
+                    <div class="feature-grid">
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h3>Безопасность</h3>
+                            <p>Используем только сертифицированные и безопасные средства для ухода за вашими питомцами</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-user-md"></i>
+                            </div>
+                            <h3>Профессионализм</h3>
+                            <p>Наши специалисты имеют многолетний опыт работы и регулярно повышают квалификацию</p>
+                        </div>
+                        <div class="feature-card">
+                            <div class="feature-icon">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <h3>Забота</h3>
+                            <p>Мы относимся к каждому питомцу с любовью и вниманием, создавая комфортную атмосферу</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-preview">
+                <div class="container">
+                    <div class="about-content">
+                        <div class="about-text">
+                            <h2>Почему выбирают нас?</h2>
+                            <p>Наш груминг-салон предлагает высококачественные услуги по уходу за домашними животными. Мы используем только безопасные и гипоаллергенные средства, а наши специалисты имеют многолетний опыт работы.</p>
+                            <p>Мы понимаем, что каждый питомец уникален, поэтому подходим к каждому индивидуально, учитывая его характер, породу и потребности.</p>
+                            <a href="#" class="btn" data-page="about">Узнать больше</a>
+                        </div>
+                        <div class="about-image">
+                            <i class="fas fa-dog"></i>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="testimonials">
+                <div class="container">
+                    <div class="section-title">
+                        <h2>Отзывы клиентов</h2>
+                    </div>
+                    <div class="testimonials-slider">
+                        <div class="testimonials-container">
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="testimonial-text">
+                                        <p>Очень довольна услугами салона! Моего пуделя стригут просто идеально. Персонал внимательный и заботливый, а атмосфера очень спокойная. Рекомендую всем!</p>
+                                    </div>
+                                    <div class="testimonial-author">
+                                        <div class="author-avatar">АК</div>
+                                        <div class="author-info">
+                                            <h4>Анна К.</h4>
+                                            <p>Владелец пуделя</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="testimonial-text">
+                                        <p>Привожу своего кота уже больше года. Всегда отличный результат! Спасибо за профессионализм и бережное отношение к животным.</p>
+                                    </div>
+                                    <div class="testimonial-author">
+                                        <div class="author-avatar">ИП</div>
+                                        <div class="author-info">
+                                            <h4>Игорь П.</h4>
+                                            <p>Владелец кота</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="testimonial-card">
+                                <div class="testimonial-content">
+                                    <div class="testimonial-text">
+                                        <p>Лучший груминг-салон в городе! Цены адекватные, качество на высоте. Мой шпиц всегда выглядит ухоженным и довольным после визита.</p>
+                                    </div>
+                                    <div class="testimonial-author">
+                                        <div class="author-avatar">МС</div>
+                                        <div class="author-info">
+                                            <h4>Марина С.</h4>
+                                            <p>Владелец шпица</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="slider-controls">
+                            <button class="slider-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+                            <button class="slider-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- О нас -->
+        <section id="about" class="page">
+            <div class="page-header">
+                <div class="container">
+                    <h1>О нашем салоне</h1>
+                    <p>Узнайте больше о нашей команде, ценностях и подходе к работе</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="about-content">
+                    <div class="about-text">
+                        <p>Наш груминг-салон был основан в 2015 году с целью предоставления высококачественных услуг по уходу за домашними животными. За эти годы мы помогли тысячам питомцев выглядеть и чувствовать себя лучше.</p>
+                        <p>Мы гордимся нашей командой профессионалов, которые не только обладают необходимыми навыками, но и искренне любят животных. Каждый наш сотрудник проходит специальное обучение и регулярно повышает квалификацию.</p>
+                        <p>В нашем салоне мы используем только проверенные и безопасные средства от ведущих производителей. Мы заботимся о здоровье и комфорте ваших питомцев, поэтому создали уютную и спокойную атмосферу.</p>
+                    </div>
+                    <div class="about-image">
+                        <i class="fas fa-paw"></i>
+                    </div>
+                </div>
+
+                <div class="counter">
+                    <div class="counter-item">
+                        <div class="counter-number" data-target="5000">0</div>
+                        <div class="counter-text">Довольных клиентов</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-number" data-target="7">0</div>
+                        <div class="counter-text">Лет опыта</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-number" data-target="15">0</div>
+                        <div class="counter-text">Профессионалов</div>
+                    </div>
+                    <div class="counter-item">
+                        <div class="counter-number" data-target="98">0</div>
+                        <div class="counter-text">% положительных отзывов</div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h2>Наша команда</h2>
+                </div>
+                <div class="team-grid">
+                    <div class="team-card fade-in">
+                        <div class="team-img">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3>Мария Иванова</h3>
+                            <p>Старший грумер</p>
+                            <p>Опыт работы: 8 лет</p>
+                        </div>
+                    </div>
+                    <div class="team-card fade-in">
+                        <div class="team-img">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3>Алексей Петров</h3>
+                            <p>Грумер-стилист</p>
+                            <p>Опыт работы: 5 лет</p>
+                        </div>
+                    </div>
+                    <div class="team-card fade-in">
+                        <div class="team-img">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="team-info">
+                            <h3>Ольга Сидорова</h3>
+                            <p>Ветеринарный косметолог</p>
+                            <p>Опыт работы: 6 лет</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Услуги -->
+        <section id="services" class="page">
+            <div class="page-header">
+                <div class="container">
+                    <h1>Наши услуги</h1>
+                    <p>Полный спектр услуг по уходу за вашими питомцами</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="services-grid">
+                    <div class="service-card" data-service="Комплексный груминг">
+                        <div class="service-img">
+                            <i class="fas fa-bath"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>Комплексный груминг</h3>
+                            <p>Полный комплекс услуг по уходу за шерстью, кожей и когтями вашего питомца. Включает купание, сушку, стрижку когтей, чистку ушей и уход за шерстью.</p>
+                            <div class="service-price">от 1500 руб.</div>
+                            <button class="btn add-to-cart" data-service="Комплексный груминг" data-price="1500">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    <div class="service-card" data-service="Стрижка и укладка">
+                        <div class="service-img">
+                            <i class="fas fa-cut"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>Стрижка и укладка</h3>
+                            <p>Профессиональная стрижка по породе или индивидуальному запросу с последующей укладкой. Мы учитываем все пожелания владельца и особенности питомца.</p>
+                            <div class="service-price">от 1200 руб.</div>
+                            <button class="btn add-to-cart" data-service="Стрижка и укладка" data-price="1200">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    <div class="service-card" data-service="Гигиенический уход">
+                        <div class="service-img">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>Гигиенический уход</h3>
+                            <p>Комплекс гигиенических процедур: стрижка когтей, чистка ушей, уход за глазами, чистка анальных желез. Необходим для поддержания здоровья питомца.</p>
+                            <div class="service-price">от 800 руб.</div>
+                            <button class="btn add-to-cart" data-service="Гигиенический уход" data-price="800">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    <div class="service-card" data-service="Чистка зубов">
+                        <div class="service-img">
+                            <i class="fas fa-teeth"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>Чистка зубов</h3>
+                            <p>Профессиональная чистка зубов и уход за полостью рта вашего питомца. Помогает предотвратить заболевания зубов и десен.</p>
+                            <div class="service-price">от 700 руб.</div>
+                            <button class="btn add-to-cart" data-service="Чистка зубов" data-price="700">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    <div class="service-card" data-service="SPA-процедуры">
+                        <div class="service-img">
+                            <i class="fas fa-spa"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>SPA-процедуры</h3>
+                            <p>Расслабляющие и оздоровительные процедуры для вашего питомца: массаж, маски для шерсти, ароматерапия.</p>
+                            <div class="service-price">от 1000 руб.</div>
+                            <button class="btn add-to-cart" data-service="SPA-процедуры" data-price="1000">Добавить в корзину</button>
+                        </div>
+                    </div>
+                    <div class="service-card" data-service="Обработка от паразитов">
+                        <div class="service-img">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="service-content">
+                            <h3>Обработка от паразитов</h3>
+                            <p>Профессиональная обработка от блох, клещей и других паразитов с использованием безопасных и эффективных средств.</p>
+                            <div class="service-price">от 600 руб.</div>
+                            <button class="btn add-to-cart" data-service="Обработка от паразитов" data-price="600">Добавить в корзину</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h2>Цены на услуги</h2>
+                </div>
+                <div class="table-responsive">
+                    <table class="price-table">
+                        <thead>
+                            <tr>
+                                <th>Услуга</th>
+                                <th>Описание</th>
+                                <th>Цена</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Комплексный груминг</td>
+                                <td>Полный уход за питомцем</td>
+                                <td class="price-amount">от 1500 руб.</td>
+                            </tr>
+                            <tr>
+                                <td>Стрижка и укладка</td>
+                                <td>Стрижка по породе или индивидуально</td>
+                                <td class="price-amount">от 1200 руб.</td>
+                            </tr>
+                            <tr>
+                                <td>Гигиенический уход</td>
+                                <td>Стрижка когтей, чистка ушей и глаз</td>
+                                <td class="price-amount">от 800 руб.</td>
+                            </tr>
+                            <tr>
+                                <td>Чистка зубов</td>
+                                <td>Профессиональная чистка</td>
+                                <td class="price-amount">от 700 руб.</td>
+                            </tr>
+                            <tr>
+                                <td>SPA-процедуры</td>
+                                <td>Массаж, маски, ароматерапия</td>
+                                <td class="price-amount">от 1000 руб.</td>
+                            </tr>
+                            <tr>
+                                <td>Обработка от паразитов</td>
+                                <td>Защита от блох и клещей</td>
+                                <td class="price-amount">от 600 руб.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- НОВАЯ СТРАНИЦА: ОТЗЫВЫ -->
+        <section id="reviews" class="page">
+            <div class="page-header">
+                <div class="container">
+                    <h1>Отзывы наших клиентов</h1>
+                    <p>Узнайте, что говорят о нас владельцы питомцев</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="reviews-section">
+                    <div class="reviews-header">
+                        <div class="reviews-stats">
+                            <div class="average-rating">
+                                <div class="rating-value">4.8</div>
+                                <div class="rating-stars">
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star-half-alt"></i>
+                                </div>
+                                <div class="rating-count">На основе 127 отзывов</div>
+                            </div>
+                            <div class="rating-bars">
+                                <div class="rating-bar">
+                                    <span class="rating-label">5 звезд</span>
+                                    <div class="rating-bar-inner">
+                                        <div class="rating-bar-fill" style="width: 85%"></div>
+                                    </div>
+                                    <span class="rating-percent">85%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">4 звезды</span>
+                                    <div class="rating-bar-inner">
+                                        <div class="rating-bar-fill" style="width: 12%"></div>
+                                    </div>
+                                    <span class="rating-percent">12%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">3 звезды</span>
+                                    <div class="rating-bar-inner">
+                                        <div class="rating-bar-fill" style="width: 2%"></div>
+                                    </div>
+                                    <span class="rating-percent">2%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">2 звезды</span>
+                                    <div class="rating-bar-inner">
+                                        <div class="rating-bar-fill" style="width: 1%"></div>
+                                    </div>
+                                    <span class="rating-percent">1%</span>
+                                </div>
+                                <div class="rating-bar">
+                                    <span class="rating-label">1 звезда</span>
+                                    <div class="rating-bar-inner">
+                                        <div class="rating-bar-fill" style="width: 0%"></div>
+                                    </div>
+                                    <span class="rating-percent">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reviews-filters">
+                        <button class="filter-btn active" data-rating="all">Все отзывы</button>
+                        <button class="filter-btn" data-rating="5">5 звезд</button>
+                        <button class="filter-btn" data-rating="4">4 звезды</button>
+                        <button class="filter-btn" data-rating="3">3 звезды</button>
+                        <button class="filter-btn" data-rating="2">2 звезды</button>
+                        <button class="filter-btn" data-rating="1">1 звезда</button>
+                    </div>
+
+                    <div class="reviews-grid" id="reviewsContainer">
+                        <!-- Отзывы будут добавляться динамически -->
+                    </div>
+
+                    <div class="pagination" id="reviewsPagination">
+                        <!-- Пагинация будет добавляться динамически -->
+                    </div>
+
+                    <div class="add-review-form light-theme-container">
+                        <h3 class="form-title">Оставить отзыв</h3>
+                        <form id="addReviewForm">
+                            <div class="form-group">
+                                <label for="reviewer-name">Ваше имя</label>
+                                <input type="text" id="reviewer-name" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Ваша оценка</label>
+                                <div class="rating-input">
+                                    <input type="radio" id="star5" name="rating" value="5">
+                                    <label for="star5"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star4" name="rating" value="4">
+                                    <label for="star4"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star3" name="rating" value="3">
+                                    <label for="star3"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star2" name="rating" value="2">
+                                    <label for="star2"><i class="fas fa-star"></i></label>
+                                    <input type="radio" id="star1" name="rating" value="1">
+                                    <label for="star1"><i class="fas fa-star"></i></label>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-service">Услуга</label>
+                                <select id="review-service" class="form-control">
+                                    <option value="">Выберите услугу</option>
+                                    <option value="Комплексный груминг">Комплексный груминг</option>
+                                    <option value="Стрижка и укладка">Стрижка и укладка</option>
+                                    <option value="Гигиенический уход">Гигиенический уход</option>
+                                    <option value="Чистка зубов">Чистка зубов</option>
+                                    <option value="SPA-процедуры">SPA-процедуры</option>
+                                    <option value="Обработка от паразитов">Обработка от паразитов</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="review-text">Текст отзыва</label>
+                                <textarea id="review-text" class="form-control" rows="5" required></textarea>
+                            </div>
+                            <button type="submit" class="btn">Опубликовать отзыв</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Контакты -->
+        <section id="contact" class="page">
+            <div class="page-header">
+                <div class="container">
+                    <h1>Контакты</h1>
+                    <p>Свяжитесь с нами любым удобным способом</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="contact-form">
+                    <form id="contactForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="name">Ваше имя</label>
+                                <input type="text" id="name" class="form-control" required>
+                                <div class="error-message">Пожалуйста, введите ваше имя</div>
+                            </div>
+                            <div class="form-group phone-input-fixed">
+                                <label for="phone">Телефон</label>
+                                <input type="tel" id="phone" class="form-control" required pattern="[0-9]{10}" title="Введите 10 цифр номера телефона">
+                                <div class="error-message">Пожалуйста, введите корректный номер телефона (10 цифр)</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" class="form-control" required>
+                            <div class="error-message">Пожалуйста, введите корректный email</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="message">Сообщение</label>
+                            <textarea id="message" class="form-control" required></textarea>
+                            <div class="error-message">Пожалуйста, введите ваше сообщение</div>
+                        </div>
+                        <button type="submit" class="btn">Отправить сообщение</button>
+                        <div class="success-message">Ваше сообщение успешно отправлено! Мы свяжемся с вами в ближайшее время.</div>
+                    </form>
+                </div>
+
+                <div class="contact-info">
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <h3>Адрес</h3>
+                        <p>г. Оренбург, ул. Примерная, д. 123</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <h3>Телефон</h3>
+                        <p>+7 (922) 892-29-47</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <h3>Email</h3>
+                        <p>likaorenburg@gmail.com</p>
+                    </div>
+                    <div class="contact-card">
+                        <div class="contact-icon">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <h3>Режим работы</h3>
+                        <p>Пн-Пт: 9:00 - 20:00</p>
+                        <p>Сб-Вс: 10:00 - 18:00</p>
+                    </div>
+                </div>
+
+                <div class="section-title">
+                    <h2>Мы в социальных сетях</h2>
+                </div>
+                <div class="social-links" style="justify-content: center;">
+                    <a href="https://t.me/likallk" target="_blank">
+                        <i class="fab fa-telegram"></i>
+                    </a>
+                    <a href="https://vk.com/likallk" target="_blank">
+                        <i class="fab fa-vk"></i>
+                    </a>
+                </div>
+
+                <div class="section-title">
+                    <h2>Как нас найти</h2>
+                </div>
+                <div class="map-container" id="map"></div>
+            </div>
+        </section>
+
+        <!-- Бронирование -->
+        <section id="booking" class="page">
+            <div class="page-header">
+                <div class="container">
+                    <h1>Онлайн запись</h1>
+                    <p>Запишитесь на услугу в удобное для вас время</p>
+                </div>
+            </div>
+            <div class="container">
+                <div class="booking-form">
+                    <form id="bookingForm">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-name">Ваше имя</label>
+                                <input type="text" id="booking-name" class="form-control" required>
+                                <div class="error-message">Пожалуйста, введите ваше имя</div>
+                            </div>
+                            <div class="form-group phone-input-fixed">
+                                <label for="booking-phone">Телефон</label>
+                                <input type="tel" id="booking-phone" class="form-control" required pattern="[0-9]{10}" title="Введите 10 цифр номера телефона">
+                                <div class="error-message">Пожалуйста, введите корректный номер телефона (10 цифр)</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-pet">Питомец</label>
+                                <input type="text" id="booking-pet" class="form-control" required>
+                                <div class="error-message">Пожалуйста, введите имя питомца</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-breed">Порода</label>
+                                <input type="text" id="booking-breed" class="form-control" required>
+                                <div class="error-message">Пожалуйста, введите породу питомца</div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="booking-date">Дата</label>
+                                <input type="date" id="booking-date" class="form-control" required>
+                                <div class="error-message">Пожалуйста, выберите дату</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="booking-time">Время</label>
+                                <select id="booking-time" class="form-control" required>
+                                    <option value="">Выберите время</option>
+                                    <option value="09:00">09:00</option>
+                                    <option value="10:00">10:00</option>
+                                    <option value="11:00">11:00</option>
+                                    <option value="12:00">12:00</option>
+                                    <option value="13:00">13:00</option>
+                                    <option value="14:00">14:00</option>
+                                    <option value="15:00">15:00</option>
+                                    <option value="16:00">16:00</option>
+                                    <option value="17:00">17:00</option>
+                                    <option value="18:00">18:00</option>
+                                </select>
+                                <div class="error-message">Пожалуйста, выберите время</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-service">Услуга</label>
+                            <select id="booking-service" class="form-control" required>
+                                <option value="">Выберите услугу</option>
+                                <option value="Комплексный груминг">Комплексный груминг</option>
+                                <option value="Стрижка и укладка">Стрижка и укладка</option>
+                                <option value="Гигиенический уход">Гигиенический уход</option>
+                                <option value="Чистка зубов">Чистка зубов</option>
+                                <option value="SPA-процедуры">SPA-процедуры</option>
+                                <option value="Обработка от паразитов">Обработка от паразитов</option>
+                            </select>
+                            <div class="error-message">Пожалуйста, выберите услугу</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="booking-notes">Дополнительные пожелания</label>
+                            <textarea id="booking-notes" class="form-control" rows="4"></textarea>
+                        </div>
+                        <button type="submit" class="btn">Записаться</button>
+                        <div class="success-message">Ваша заявка успешно отправлена! Мы свяжемся с вами для подтверждения записи.</div>
+                    </form>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Футер -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>О нас</h3>
+                    <p>Профессиональный груминг-салон для ваших питомцев. Мы заботимся о комфорте и здоровье ваших любимцев с 2015 года.</p>
+                    <div class="social-links">
+                        <a href="https://t.me/likallk" target="_blank">
+                            <i class="fab fa-telegram"></i>
+                        </a>
+                        <a href="https://vk.com/likallk" target="_blank">
+                            <i class="fab fa-vk"></i>
+                        </a>
+                        <a href="mailto:likaorenburg@gmail.com">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Услуги</h3>
+                    <ul class="footer-links">
+                        <li><a href="#" data-page="services">Комплексный груминг</a></li>
+                        <li><a href="#" data-page="services">Стрижка и укладка</a></li>
+                        <li><a href="#" data-page="services">Гигиенический уход</a></li>
+                        <li><a href="#" data-page="services">Чистка зубов</a></li>
+                        <li><a href="#" data-page="services">SPA-процедуры</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <p><i class="fas fa-map-marker-alt"></i> г. Оренбург, ул. Примерная, д. 123</p>
+                    <p><i class="fas fa-phone"></i> +7 (922) 892-29-47</p>
+                    <p><i class="fas fa-envelope"></i> likaorenburg@gmail.com</p>
+                    <p><i class="fas fa-clock"></i> Пн-Пт: 9:00-20:00, Сб-Вс: 10:00-18:00</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Разработчики сайта</h3>
+                    <p><strong>Лика</strong> - Основной разработчик и дизайнер<br>
+                    ТГ: <a href="https://t.me/likallk" target="_blank">@likallk</a></p>
+                    <p><strong>Лера</strong> - Редактор по дизайну<br>
+                    ТГ: <a href="https://t.me/lerkavvl" target="_blank">@lerkavvl</a></p>
+                    <p><strong>Миша</strong> - Главный копирайтер<br>
+                    ТГ: <a href="https://t.me/magnoliagod" target="_blank">@magnoliagod</a></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2023 Paws & Claws - Груминг салон для питомцев. Все права защищены.</p>
+                <p>Сайт разработан: Лика (разработчик), Лера (дизайнер), Миша (копирайтер)</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Кнопка "Наверх" -->
+    <button class="scroll-to-top">
+        <i class="fas fa-chevron-up"></i>
+    </button>
+
+    <!-- Поиск -->
+    <div class="search-container">
+        <div class="search-box">
+            <button class="close-search">
+                <i class="fas fa-times"></i>
+            </button>
+            <input type="text" placeholder="Поиск услуг...">
+            <div class="search-results"></div>
+        </div>
+    </div>
+
+    <!-- Корзина -->
+    <div class="cart-sidebar">
+        <div class="cart-header">
+            <h3>Корзина</h3>
+            <button class="close-cart">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items">
+            <!-- Товары будут добавляться динамически -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Итого:</span>
+                <span class="total-amount">0 руб.</span>
+            </div>
+            <div class="checkout-form">
+                <div class="form-group">
+                    <label for="customer-name">Ваше имя</label>
+                    <input type="text" id="customer-name" class="form-control" required>
+                </div>
+                <div class="form-group phone-input-fixed">
+                    <label for="customer-phone">Телефон</label>
+                    <input type="tel" id="customer-phone" class="form-control" required pattern="[0-9]{10}" title="Введите 10 цифр номера телефона">
+                    <div class="error-message">Пожалуйста, введите корректный номер телефона (10 цифр)</div>
+                </div>
+            </div>
+            <button class="checkout-btn">Оформить заказ</button>
+        </div>
+    </div>
+
+    <!-- Затемнение фона -->
+    <div class="overlay"></div>
+
+    <!-- Уведомление -->
+    <div class="notification">
+        Товар добавлен в корзину!
+    </div>
+
+    <!-- Модальное окно -->
+    <div class="modal">
+        <div class="modal-content">
+            <button class="modal-close">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="modal-title">Подтверждение заказа</h3>
+            <p>Ваш заказ успешно оформлен! Мы свяжемся с вами в ближайшее время для подтверждения.</p>
+            <button class="btn close-modal">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // Основной JavaScript код
+        document.addEventListener('DOMContentLoaded', function() {
+            // Скрытие предзагрузчика
+            setTimeout(() => {
+                document.querySelector('.preloader').classList.add('hidden');
+            }, 1000);
+
+            // Инициализация переменных
+            let cart = [];
+            let currentTheme = localStorage.getItem('theme') || 'light';
+            let currentPage = 'home';
+
+            // Установка начальной темы
+            setTheme(currentTheme);
+
+            // Навигация по страницам
+            document.querySelectorAll('[data-page]').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const page = this.getAttribute('data-page');
+                    navigateToPage(page);
+                });
+            });
+
+            // Функция навигации
+            function navigateToPage(page) {
+                // Скрываем все страницы
+                document.querySelectorAll('.page').forEach(p => {
+                    p.classList.remove('active');
+                });
+
+                // Показываем выбранную страницу
+                document.getElementById(page).classList.add('active');
+                currentPage = page;
+
+                // Прокрутка к верху страницы
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                
+                // Закрываем мобильное меню
+                document.querySelector('nav').classList.remove('active');
+            }
+
+            // Переключение темы
+            document.querySelector('.theme-toggle').addEventListener('click', function() {
+                currentTheme = currentTheme === 'light' ? 'dark' : 'light';
+                setTheme(currentTheme);
+                localStorage.setItem('theme', currentTheme);
+                
+                // Обновляем классы для контейнеров отзывов
+                updateReviewContainers();
+            });
+
+            function setTheme(theme) {
+                if (theme === 'dark') {
+                    document.body.classList.add('dark-theme');
+                    document.querySelector('.theme-toggle').classList.add('active');
+                } else {
+                    document.body.classList.remove('dark-theme');
+                    document.querySelector('.theme-toggle').classList.remove('active');
+                }
+            }
+
+            // Функция для обновления контейнеров отзывов
+            function updateReviewContainers() {
+                const reviewCards = document.querySelectorAll('.review-card');
+                const addReviewForm = document.querySelector('.add-review-form');
+                
+                if (currentTheme === 'light') {
+                    reviewCards.forEach(card => {
+                        card.classList.add('light-theme-container');
+                    });
+                    if (addReviewForm) {
+                        addReviewForm.classList.add('light-theme-container');
+                    }
+                } else {
+                    reviewCards.forEach(card => {
+                        card.classList.remove('light-theme-container');
+                    });
+                    if (addReviewForm) {
+                        addReviewForm.classList.remove('light-theme-container');
+                    }
+                }
+            }
+
+            // Кнопка "Наверх"
+            const scrollToTopBtn = document.querySelector('.scroll-to-top');
+            window.addEventListener('scroll', function() {
+                if (window.pageYOffset > 300) {
+                    scrollToTopBtn.classList.add('show');
+                } else {
+                    scrollToTopBtn.classList.remove('show');
+                }
+            });
+
+            scrollToTopBtn.addEventListener('click', function() {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+
+            // Поиск
+            const searchBtn = document.querySelector('.search-btn');
+            const searchContainer = document.querySelector('.search-container');
+            const closeSearch = document.querySelector('.close-search');
+            const overlay = document.querySelector('.overlay');
+
+            searchBtn.addEventListener('click', function() {
+                searchContainer.classList.add('active');
+                overlay.classList.add('active');
+                document.querySelector('.search-container input').focus();
+            });
+
+            closeSearch.addEventListener('click', function() {
+                searchContainer.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            overlay.addEventListener('click', function() {
+                searchContainer.classList.remove('active');
+                document.querySelector('.cart-sidebar').classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Корзина
+            const cartBtn = document.querySelector('.cart-btn');
+            const cartSidebar = document.querySelector('.cart-sidebar');
+            const closeCart = document.querySelector('.close-cart');
+            const addToCartBtns = document.querySelectorAll('.add-to-cart');
+            const cartItems = document.querySelector('.cart-items');
+            const totalAmount = document.querySelector('.total-amount');
+            const cartCount = document.querySelector('.cart-count');
+            const checkoutBtn = document.querySelector('.checkout-btn');
+            const notification = document.querySelector('.notification');
+
+            cartBtn.addEventListener('click', function() {
+                cartSidebar.classList.add('active');
+                overlay.classList.add('active');
+            });
+
+            closeCart.addEventListener('click', function() {
+                cartSidebar.classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Добавление товаров в корзину
+            addToCartBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const service = this.getAttribute('data-service');
+                    const price = parseInt(this.getAttribute('data-price'));
+
+                    // Добавляем товар в корзину
+                    addToCart(service, price);
+
+                    // Показываем уведомление
+                    showNotification();
+
+                    // Обновляем счетчик корзины
+                    updateCartCount();
+
+                    // Обновляем отображение корзины
+                    updateCartDisplay();
+                });
+            });
+
+            function addToCart(service, price) {
+                // Проверяем, есть ли уже такой товар в корзине
+                const existingItem = cart.find(item => item.service === service);
+
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({
+                        service: service,
+                        price: price,
+                        quantity: 1
+                    });
+                }
+            }
+
+            function showNotification() {
+                notification.classList.add('show');
+                setTimeout(() => {
+                    notification.classList.remove('show');
+                }, 3000);
+            }
+
+            function updateCartCount() {
+                const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+                cartCount.textContent = totalItems;
+            }
+
+            function updateCartDisplay() {
+                // Очищаем корзину
+                cartItems.innerHTML = '';
+
+                // Добавляем товары
+                cart.forEach((item, index) => {
+                    const cartItem = document.createElement('div');
+                    cartItem.className = 'cart-item';
+                    cartItem.innerHTML = `
+                        <div class="cart-item-img">
+                            <i class="fas fa-paw"></i>
+                        </div>
+                        <div class="cart-item-details">
+                            <h4>${item.service}</h4>
+                            <div class="cart-item-price">${item.price} руб. x ${item.quantity}</div>
+                        </div>
+                        <button class="cart-item-remove" data-index="${index}">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    `;
+                    cartItems.appendChild(cartItem);
+                });
+
+                // Добавляем обработчики для кнопок удаления
+                document.querySelectorAll('.cart-item-remove').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        removeFromCart(index);
+                    });
+                });
+
+                // Обновляем общую сумму
+                updateTotalAmount();
+            }
+
+            function removeFromCart(index) {
+                cart.splice(index, 1);
+                updateCartDisplay();
+                updateCartCount();
+            }
+
+            function updateTotalAmount() {
+                const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                totalAmount.textContent = `${total} руб.`;
+            }
+
+            // Оформление заказа
+            checkoutBtn.addEventListener('click', function() {
+                if (cart.length === 0) {
+                    alert('Корзина пуста!');
+                    return;
+                }
+
+                const customerName = document.getElementById('customer-name').value;
+                const customerPhone = document.getElementById('customer-phone').value;
+
+                if (!customerName || !customerPhone) {
+                    alert('Пожалуйста, заполните все поля для оформления заказа!');
+                    return;
+                }
+
+                // Проверка номера телефона
+                const phoneRegex = /^[0-9]{10}$/;
+                if (!phoneRegex.test(customerPhone)) {
+                    alert('Пожалуйста, введите корректный номер телефона (10 цифр)');
+                    return;
+                }
+
+                // Показываем модальное окно
+                document.querySelector('.modal').classList.add('active');
+                overlay.classList.add('active');
+
+                // Очищаем корзину
+                cart = [];
+                updateCartDisplay();
+                updateCartCount();
+                
+                // Очищаем поля формы
+                document.getElementById('customer-name').value = '';
+                document.getElementById('customer-phone').value = '';
+            });
+
+            // Закрытие модального окна
+            document.querySelector('.modal-close').addEventListener('click', function() {
+                document.querySelector('.modal').classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            document.querySelector('.close-modal').addEventListener('click', function() {
+                document.querySelector('.modal').classList.remove('active');
+                overlay.classList.remove('active');
+            });
+
+            // Анимации при скролле
+            const fadeElements = document.querySelectorAll('.fade-in');
+
+            function checkFade() {
+                fadeElements.forEach(element => {
+                    const elementTop = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+
+                    if (elementTop < windowHeight - 100) {
+                        element.classList.add('visible');
+                    }
+                });
+            }
+
+            window.addEventListener('scroll', checkFade);
+            checkFade(); // Проверяем при загрузке
+
+            // Слайдер отзывов
+            const testimonialsContainer = document.querySelector('.testimonials-container');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            let currentSlide = 0;
+
+            const slides = document.querySelectorAll('.testimonial-card');
+            const totalSlides = slides.length;
+
+            function updateSlider() {
+                testimonialsContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+
+            nextBtn.addEventListener('click', function() {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlider();
+            });
+
+            prevBtn.addEventListener('click', function() {
+                currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+                updateSlider();
+            });
+
+            // Автоматическое перелистывание слайдера
+            setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                updateSlider();
+            }, 5000);
+
+            // Анимация счетчика
+            const counters = document.querySelectorAll('.counter-number');
+            const speed = 200;
+
+            function animateCounter(counter) {
+                const target = +counter.getAttribute('data-target');
+                const count = +counter.innerText;
+                const increment = target / speed;
+
+                if (count < target) {
+                    counter.innerText = Math.ceil(count + increment);
+                    setTimeout(() => animateCounter(counter), 10);
+                } else {
+                    counter.innerText = target;
+                }
+            }
+
+            // Запускаем анимацию счетчика при появлении в области видимости
+            const counterObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        animateCounter(entry.target);
+                        counterObserver.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            counters.forEach(counter => {
+                counterObserver.observe(counter);
+            });
+
+            // Обработка форм
+            const contactForm = document.getElementById('contactForm');
+            const bookingForm = document.getElementById('bookingForm');
+
+            contactForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm(this)) {
+                    // Имитация отправки формы
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.innerHTML = '<div class="loading"></div>';
+                    
+                    setTimeout(() => {
+                        submitBtn.textContent = 'Отправлено!';
+                        this.querySelector('.success-message').classList.add('show');
+                        
+                        setTimeout(() => {
+                            submitBtn.textContent = originalText;
+                            this.reset();
+                            this.querySelector('.success-message').classList.remove('show');
+                        }, 3000);
+                    }, 1500);
+                }
+            });
+
+            bookingForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                if (validateForm(this)) {
+                    // Имитация отправки формы
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const originalText = submitBtn.textContent;
+                    submitBtn.innerHTML = '<div class="loading"></div>';
+                    
+                    setTimeout(() => {
+                        submitBtn.textContent = 'Запись отправлена!';
+                        this.querySelector('.success-message').classList.add('show');
+                        
+                        setTimeout(() => {
+                            submitBtn.textContent = originalText;
+                            this.reset();
+                            this.querySelector('.success-message').classList.remove('show');
+                        }, 3000);
+                    }, 1500);
+                }
+            });
+
+            function validateForm(form) {
+                let isValid = true;
+                const inputs = form.querySelectorAll('input, select, textarea');
+
+                inputs.forEach(input => {
+                    if (input.hasAttribute('required') && !input.value.trim()) {
+                        isValid = false;
+                        input.classList.add('error');
+                    } else {
+                        input.classList.remove('error');
+                    }
+
+                    // Проверка email
+                    if (input.type === 'email' && input.value) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(input.value)) {
+                            isValid = false;
+                            input.classList.add('error');
+                        }
+                    }
+
+                    // Проверка телефона
+                    if (input.type === 'tel' && input.value) {
+                        const phoneRegex = /^[0-9]{10}$/;
+                        if (!phoneRegex.test(input.value)) {
+                            isValid = false;
+                            input.classList.add('error');
+                        }
+                    }
+                });
+
+                return isValid;
+            }
+
+            // Добавляем обработчики для инпутов, чтобы убирать ошибки при вводе
+            document.querySelectorAll('input, select, textarea').forEach(input => {
+                input.addEventListener('input', function() {
+                    this.classList.remove('error');
+                });
+            });
+
+            // Добавляем функциональность для выпадающего меню
+            document.querySelectorAll('.dropdown').forEach(dropdown => {
+                dropdown.addEventListener('mouseenter', function() {
+                    this.querySelector('.dropdown-menu').style.opacity = '1';
+                    this.querySelector('.dropdown-menu').style.visibility = 'visible';
+                    this.querySelector('.dropdown-menu').style.transform = 'translateY(0)';
+                });
+                
+                dropdown.addEventListener('mouseleave', function() {
+                    this.querySelector('.dropdown-menu').style.opacity = '0';
+                    this.querySelector('.dropdown-menu').style.visibility = 'hidden';
+                    this.querySelector('.dropdown-menu').style.transform = 'translateY(10px)';
+                });
+            });
+
+            // Добавляем обработчики для элементов выпадающего меню услуг
+            document.querySelectorAll('.dropdown-item[data-service]').forEach(item => {
+                item.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const serviceName = this.getAttribute('data-service');
+                    
+                    // Переходим на страницу услуг
+                    navigateToPage('services');
+                    
+                    // Прокручиваем к соответствующей услуге
+                    setTimeout(() => {
+                        const serviceCards = document.querySelectorAll('.service-card');
+                        serviceCards.forEach(card => {
+                            if (card.getAttribute('data-service') === serviceName) {
+                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                card.classList.add('pulse');
+                                setTimeout(() => card.classList.remove('pulse'), 2000);
+                            }
+                        });
+                    }, 500);
+                });
+            });
+
+            // Добавляем функциональность для поиска
+            const searchInput = document.querySelector('.search-container input');
+            const searchResults = document.querySelector('.search-results');
+
+            searchInput.addEventListener('input', function() {
+                const query = this.value.toLowerCase();
+                
+                if (query.length < 2) {
+                    searchResults.innerHTML = '';
+                    return;
+                }
+
+                // Имитация результатов поиска
+                const services = [
+                    'Комплексный груминг',
+                    'Стрижка и укладка',
+                    'Гигиенический уход',
+                    'Чистка зубов',
+                    'SPA-процедуры',
+                    'Обработка от паразитов'
+                ];
+
+                const filteredServices = services.filter(service => 
+                    service.toLowerCase().includes(query)
+                );
+
+                if (filteredServices.length > 0) {
+                    searchResults.innerHTML = filteredServices.map(service => 
+                        `<div class="search-result-item" data-service="${service}">${service}</div>`
+                    ).join('');
+                } else {
+                    searchResults.innerHTML = '<div class="search-result-item">Ничего не найдено</div>';
+                }
+            });
+
+            // Обработка клика по результату поиска
+            searchResults.addEventListener('click', function(e) {
+                if (e.target.classList.contains('search-result-item')) {
+                    const service = e.target.textContent;
+                    
+                    // Переходим на страницу услуг
+                    navigateToPage('services');
+                    
+                    // Закрываем поиск
+                    searchContainer.classList.remove('active');
+                    overlay.classList.remove('active');
+                    
+                    // Прокручиваем к соответствующей услуге
+                    setTimeout(() => {
+                        const serviceCards = document.querySelectorAll('.service-card');
+                        serviceCards.forEach(card => {
+                            if (card.getAttribute('data-service') === service) {
+                                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                card.classList.add('pulse');
+                                setTimeout(() => card.classList.remove('pulse'), 2000);
+                            }
+                        });
+                    }, 500);
+                }
+            });
+
+            // Добавляем функциональность для индикатора прогресса прокрутки
+            const progressBar = document.createElement('div');
+            progressBar.className = 'scroll-progress';
+            progressBar.style.position = 'fixed';
+            progressBar.style.top = '0';
+            progressBar.style.left = '0';
+            progressBar.style.height = '3px';
+            progressBar.style.backgroundColor = 'var(--accent-color)';
+            progressBar.style.width = '0%';
+            progressBar.style.zIndex = '1001';
+            progressBar.style.transition = 'width 0.3s ease';
+            
+            document.body.appendChild(progressBar);
+            
+            window.addEventListener('scroll', function() {
+                const winHeight = window.innerHeight;
+                const docHeight = document.documentElement.scrollHeight;
+                const scrollTop = window.pageYOffset;
+                const scrollPercent = (scrollTop / (docHeight - winHeight)) * 100;
+                progressBar.style.width = `${scrollPercent}%`;
+            });
+
+            // Добавляем функциональность для отображения текущего года в футере
+            const currentYear = new Date().getFullYear();
+            document.querySelector('.footer-bottom p').innerHTML = `&copy; ${currentYear} Paws & Claws - Груминг салон для питомцев. Все права защищены.`;
+
+            // Мобильное меню
+            const mobileMenuBtn = document.querySelector('.mobile-menu-btn');
+            const navMenu = document.querySelector('nav');
+
+            mobileMenuBtn.addEventListener('click', function() {
+                navMenu.classList.toggle('active');
+            });
+
+            // Инициализация Яндекс.Карты
+            function initMap() {
+                // Координаты салона (Оренбург)
+                const salonLocation = [51.768199, 55.096955];
+                
+                // Создаем карту
+                const map = new ymaps.Map('map', {
+                    center: salonLocation,
+                    zoom: 15
+                });
+                
+                // Добавляем метку
+                const placemark = new ymaps.Placemark(salonLocation, {
+                    hintContent: 'Paws & Claws',
+                    balloonContent: 'Груминг-салон для питомцев'
+                });
+                
+                map.geoObjects.add(placemark);
+            }
+
+            // Инициализируем карту после загрузки API
+            ymaps.ready(initMap);
+
+            // НОВЫЙ КОД ДЛЯ СИСТЕМЫ ОТЗЫВОВ
+            const reviewsContainer = document.getElementById('reviewsContainer');
+            const reviewsPagination = document.getElementById('reviewsPagination');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const addReviewForm = document.getElementById('addReviewForm');
+
+            // Пример данных отзывов
+            let reviews = [
+                {
+                    id: 1,
+                    author: "Анна К.",
+                    avatar: "АК",
+                    rating: 5,
+                    text: "Очень довольна услугами салона! Моего пуделя стригут просто идеально. Персонал внимательный и заботливый, а атмосфера очень спокойная. Рекомендую всем!",
+                    service: "Стрижка и укладка",
+                    date: "2023-10-15"
+                },
+                {
+                    id: 2,
+                    author: "Игорь П.",
+                    avatar: "ИП",
+                    rating: 5,
+                    text: "Привожу своего кота уже больше года. Всегда отличный результат! Спасибо за профессионализм и бережное отношение к животным.",
+                    service: "Комплексный груминг",
+                    date: "2023-10-10"
+                },
+                {
+                    id: 3,
+                    author: "Марина С.",
+                    avatar: "МС",
+                    rating: 5,
+                    text: "Лучший груминг-салон в городе! Цены адекватные, качество на высоте. Мой шпиц всегда выглядит ухоженным и довольным после визита.",
+                    service: "Комплексный груминг",
+                    date: "2023-10-05"
+                },
+                {
+                    id: 4,
+                    author: "Дмитрий В.",
+                    avatar: "ДВ",
+                    rating: 4,
+                    text: "Хороший салон, качественные услуги. Единственное, пришлось немного подождать в очереди, но результат того стоил.",
+                    service: "Гигиенический уход",
+                    date: "2023-09-28"
+                },
+                {
+                    id: 5,
+                    author: "Ольга М.",
+                    avatar: "ОМ",
+                    rating: 5,
+                    text: "Впервые привела свою собаку на груминг и осталась очень довольна. Специалисты знают свое дело, используют качественные средства. Обязательно вернемся!",
+                    service: "Комплексный груминг",
+                    date: "2023-09-20"
+                },
+                {
+                    id: 6,
+                    author: "Сергей Л.",
+                    avatar: "СЛ",
+                    rating: 5,
+                    text: "Отличный сервис! Мой лабрадор всегда боится водных процедур, но здесь к нему нашли подход. Теперь ходим с удовольствием.",
+                    service: "SPA-процедуры",
+                    date: "2023-09-15"
+                },
+                {
+                    id: 7,
+                    author: "Екатерина Р.",
+                    avatar: "ЕР",
+                    rating: 4,
+                    text: "Хороший салон, квалифицированные специалисты. Цены немного выше средних, но качество обслуживания соответствует.",
+                    service: "Чистка зубов",
+                    date: "2023-09-10"
+                },
+                {
+                    id: 8,
+                    author: "Александр К.",
+                    avatar: "АК",
+                    rating: 5,
+                    text: "Лучшее место для ухода за питомцем в городе! Персонал очень внимательный, всегда дают полезные советы по уходу за шерстью.",
+                    service: "Стрижка и укладка",
+                    date: "2023-09-05"
+                },
+                {
+                    id: 9,
+                    author: "Наталья З.",
+                    avatar: "НЗ",
+                    rating: 5,
+                    text: "Приводила кота на обработку от паразитов. Очень аккуратно и профессионально выполнили процедуру. Кот даже не нервничал!",
+                    service: "Обработка от паразитов",
+                    date: "2023-08-28"
+                },
+                {
+                    id: 10,
+                    author: "Павел С.",
+                    avatar: "ПС",
+                    rating: 4,
+                    text: "Хороший салон, но есть небольшие замечания по организации записи. В остальном - все отлично, качество услуг на высоте.",
+                    service: "Гигиенический уход",
+                    date: "2023-08-20"
+                }
+            ];
+
+            let currentFilter = 'all';
+            let currentPageReviews = 1;
+            const reviewsPerPage = 6;
+
+            // Инициализация системы отзывов
+            function initReviewsSystem() {
+                displayReviews();
+                setupFilters();
+                setupPagination();
+                setupAddReviewForm();
+                updateReviewContainers(); // Применяем стили для контейнеров
+            }
+
+            // Отображение отзывов
+            function displayReviews() {
+                reviewsContainer.innerHTML = '';
+
+                const filteredReviews = currentFilter === 'all' 
+                    ? reviews 
+                    : reviews.filter(review => review.rating == currentFilter);
+
+                const startIndex = (currentPageReviews - 1) * reviewsPerPage;
+                const endIndex = startIndex + reviewsPerPage;
+                const paginatedReviews = filteredReviews.slice(startIndex, endIndex);
+
+                if (paginatedReviews.length === 0) {
+                    reviewsContainer.innerHTML = '<p class="no-reviews">Отзывы не найдены</p>';
+                    return;
+                }
+
+                paginatedReviews.forEach(review => {
+                    const reviewCard = document.createElement('div');
+                    reviewCard.className = 'review-card';
+                    if (currentTheme === 'light') {
+                        reviewCard.classList.add('light-theme-container');
+                    }
+                    
+                    const stars = '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating);
+                    const formattedDate = new Date(review.date).toLocaleDateString('ru-RU');
+                    
+                    reviewCard.innerHTML = `
+                        <div class="review-header">
+                            <div class="review-author">
+                                <div class="review-avatar">${review.avatar}</div>
+                                <div class="review-author-info">
+                                    <h4>${review.author}</h4>
+                                    <div class="review-date">${formattedDate}</div>
+                                </div>
+                            </div>
+                            <div class="review-rating">
+                                ${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}
+                            </div>
+                        </div>
+                        <div class="review-text">
+                            <p>${review.text}</p>
+                        </div>
+                        <div class="review-service">
+                            Услуга: ${review.service}
+                        </div>
+                    `;
+                    
+                    reviewsContainer.appendChild(reviewCard);
+                });
+            }
+
+            // Настройка фильтров
+            function setupFilters() {
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        filterBtns.forEach(b => b.classList.remove('active'));
+                        this.classList.add('active');
+                        
+                        currentFilter = this.getAttribute('data-rating');
+                        currentPageReviews = 1;
+                        displayReviews();
+                        setupPagination();
+                    });
+                });
+            }
+
+            // Настройка пагинации
+            function setupPagination() {
+                reviewsPagination.innerHTML = '';
+                
+                const filteredReviews = currentFilter === 'all' 
+                    ? reviews 
+                    : reviews.filter(review => review.rating == currentFilter);
+                
+                const totalPages = Math.ceil(filteredReviews.length / reviewsPerPage);
+                
+                if (totalPages <= 1) return;
+                
+                for (let i = 1; i <= totalPages; i++) {
+                    const pageItem = document.createElement('div');
+                    pageItem.className = 'pagination-item';
+                    
+                    const pageLink = document.createElement('a');
+                    pageLink.href = '#';
+                    pageLink.className = 'pagination-link';
+                    if (i === currentPageReviews) {
+                        pageLink.classList.add('active');
+                    }
+                    pageLink.textContent = i;
+                    
+                    pageLink.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        currentPageReviews = i;
+                        displayReviews();
+                        setupPagination();
+                    });
+                    
+                    pageItem.appendChild(pageLink);
+                    reviewsPagination.appendChild(pageItem);
+                }
+            }
+
+            // Настройка формы добавления отзыва
+            function setupAddReviewForm() {
+                addReviewForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const name = document.getElementById('reviewer-name').value;
+                    const rating = document.querySelector('input[name="rating"]:checked');
+                    const service = document.getElementById('review-service').value;
+                    const text = document.getElementById('review-text').value;
+                    
+                    if (!name || !rating || !text) {
+                        alert('Пожалуйста, заполните все обязательные поля');
+                        return;
+                    }
+                    
+                    const newReview = {
+                        id: reviews.length + 1,
+                        author: name,
+                        avatar: name.split(' ').map(n => n[0]).join(''),
+                        rating: parseInt(rating.value),
+                        text: text,
+                        service: service || 'Не указана',
+                        date: new Date().toISOString().split('T')[0]
+                    };
+                    
+                    reviews.unshift(newReview);
+                    
+                    // Сброс формы
+                    addReviewForm.reset();
+                    
+                    // Обновление отображения
+                    currentPageReviews = 1;
+                    displayReviews();
+                    setupPagination();
+                    
+                    // Показать сообщение об успехе
+                    alert('Ваш отзыв успешно добавлен!');
+                });
+            }
+
+            // Инициализация системы отзывов при загрузке страницы
+            initReviewsSystem();
+
+            // Завершаем инициализацию
+            console.log('Сайт успешно загружен и инициализирован!');
+        });
+    </script>
+</body>
+</html>
